@@ -1,3 +1,4 @@
+from xmlrpc.client import ResponseError
 import requests
 import telepot
 import json
@@ -12,7 +13,7 @@ s.get(
 )
 
 
-def nextdate(num):
+def nextdate(num: int):
     text = (date.today() + timedelta(num)).strftime("%Y%m%d")
     return text
 
@@ -38,7 +39,22 @@ def gettimetable(s: requests.Session, date: int):
         headers={
             "Referer": "https://m.cgv.co.kr/WebApp/Reservation/schedule.aspx?tc=0013&rc=01&ymd="
             + nextdate(date)
-            + "&fst=&fet=&fsrc="
+            + "&fst=&fet=&fsrc=",
+            "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Mobile Safari/537.36",
+            "Accept-Language": "ko-KR,ko;q=0.9,ja-JP;q=0.8,ja;q=0.7,en-US;q=0.6,en;q=0.5",
+            "X-Requested-With": "XMLHttpRequest",
+            "Accept": "application/json, text/javascript, */*; q=0.01",
+            "Origin": "https://m.cgv.co.kr",
+            "sec-ch-ua": '"Not A;Brand";v="99", "Chromium";v="102", "Google Chrome";v="102"',
+            "sec-ch-ua-platform": '"Android"',
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin",
+            "sec-gpc": "1",
+            "Host": "m.cgv.co.kr",
+            "Connection": "keep-alive",
+            "Content-Type": "application/json",
+            "Content-Length": "173",
         },
     )
     return res
@@ -55,7 +71,7 @@ def loadtojson(res):
     return res
 
 
-def makelib(res, l):
+def makelib(res: requests.Response, l: int):
     return [
         res["ResultSchedule"]["ScheduleList"][l]["MovieAttrNm"],
         res["ResultSchedule"]["ScheduleList"][l]["MovieNmKor"],
@@ -128,9 +144,7 @@ while True:
                     + "월 "
                     + nextdate(l)[6:]
                     + "일\n"
-                    + "[시간표 변경]\n"
                     + text
-                    + " --> "
                     + "\n"
                     + txt,
                 )
